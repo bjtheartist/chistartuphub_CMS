@@ -358,6 +358,42 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+
+  // User Settings
+  settings: router({
+    get: protectedProcedure
+      .query(async ({ ctx }) => {
+        return await db.getOrCreateUserSettings(ctx.user.id);
+      }),
+    
+    update: protectedProcedure
+      .input(z.object({
+        bio: z.string().optional(),
+        avatarUrl: z.string().optional(),
+        linkedinConnected: z.number().optional(),
+        xConnected: z.number().optional(),
+        instagramConnected: z.number().optional(),
+        linkedinApiKey: z.string().optional(),
+        xApiKey: z.string().optional(),
+        instagramApiKey: z.string().optional(),
+        defaultVisibility: z.string().optional(),
+        autoSaveFrequency: z.number().optional(),
+        defaultPlatformId: z.number().optional(),
+        timezone: z.string().optional(),
+        emailNotifications: z.number().optional(),
+        calendarReminders: z.number().optional(),
+        weeklyReports: z.number().optional(),
+        companyLogoUrl: z.string().optional(),
+        brandColorPrimary: z.string().optional(),
+        brandColorSecondary: z.string().optional(),
+        defaultHashtags: z.string().optional(),
+        signatureText: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        await db.updateUserSettings(ctx.user.id, input);
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

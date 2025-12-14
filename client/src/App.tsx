@@ -12,6 +12,7 @@ import Goals from "./pages/Goals";
 import Drafts from "./pages/Drafts";
 import Analytics from "./pages/Analytics";
 import MarketIntel from "./pages/MarketIntel";
+import Settings from "./pages/Settings";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/drafts" component={Drafts} />
       <Route path="/analytics" component={Analytics} />
       <Route path="/market-intel" component={MarketIntel} />
+      <Route path="/settings" component={Settings} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

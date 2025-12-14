@@ -155,3 +155,41 @@ export const intelligence = mysqlTable("intelligence", {
 
 export type Intelligence = typeof intelligence.$inferSelect;
 export type InsertIntelligence = typeof intelligence.$inferInsert;
+
+/**
+ * User settings and preferences
+ */
+export const userSettings = mysqlTable("userSettings", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  // Profile
+  bio: text("bio"),
+  avatarUrl: varchar("avatarUrl", { length: 500 }),
+  // Platform Connections
+  linkedinConnected: int("linkedinConnected").default(0), // 0 = not connected, 1 = connected
+  xConnected: int("xConnected").default(0),
+  instagramConnected: int("instagramConnected").default(0),
+  linkedinApiKey: text("linkedinApiKey"),
+  xApiKey: text("xApiKey"),
+  instagramApiKey: text("instagramApiKey"),
+  // Content Preferences
+  defaultVisibility: varchar("defaultVisibility", { length: 20 }).default("public"),
+  autoSaveFrequency: int("autoSaveFrequency").default(30), // seconds
+  defaultPlatformId: int("defaultPlatformId"),
+  timezone: varchar("timezone", { length: 50 }).default("America/Chicago"),
+  // Notification Settings
+  emailNotifications: int("emailNotifications").default(1),
+  calendarReminders: int("calendarReminders").default(1),
+  weeklyReports: int("weeklyReports").default(1),
+  // Brand Settings
+  companyLogoUrl: varchar("companyLogoUrl", { length: 500 }),
+  brandColorPrimary: varchar("brandColorPrimary", { length: 20 }).default("#3B82F6"),
+  brandColorSecondary: varchar("brandColorSecondary", { length: 20 }).default("#EAB308"),
+  defaultHashtags: text("defaultHashtags"), // JSON array
+  signatureText: text("signatureText"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type UserSettings = typeof userSettings.$inferSelect;
+export type InsertUserSettings = typeof userSettings.$inferInsert;

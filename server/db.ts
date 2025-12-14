@@ -1,6 +1,6 @@
 import { eq, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, platforms, posts, assets, postAssets, goals, postGoals, intelligence, InsertPost, InsertAsset, InsertPlatform, InsertGoal, InsertIntelligence } from "../drizzle/schema";
+import { InsertUser, users, platforms, posts, assets, postAssets, goals, postGoals, intelligence, userSettings, InsertPost, InsertAsset, InsertPlatform, InsertGoal, InsertIntelligence, InsertUserSettings } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -391,6 +391,46 @@ export async function deleteIntelligence(id: number) {
   if (!db) throw new Error("Database not available");
   
   await db.delete(intelligence).where(eq(intelligence.id, id));
+}
+
+// ===== USER SETTINGS OPERATIONS =====
+
+export async function getUserSettings(userId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(userSettings).where(eq(userSettings.userId, userId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createUserSettings(settings: InsertUserSettings) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(userSettings).values(settings);
+  return result[0].insertId;
+}
+
+export async function updateUserSettings(userId: number, updates: Partial<InsertUserSettings>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(userSettings).set(updates).where(eq(userSettings.userId, userId));
+}
+
+export async function getOrCreateUserSettings(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  let settings = await getUserSettings(userId);
+  
+  if (!settings) {
+    // Create default settings for new user
+    await createUserSettings({ userId });
+    settings = await getUserSettings(userId);
+  }
+  
+  return settings;
 }
 
 export async function getGoalsForPost(postId: number) {
