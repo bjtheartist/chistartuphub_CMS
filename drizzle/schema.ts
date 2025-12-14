@@ -136,3 +136,22 @@ export const postGoals = mysqlTable("postGoals", {
 
 export type PostGoal = typeof postGoals.$inferSelect;
 export type InsertPostGoal = typeof postGoals.$inferInsert;
+
+/**
+ * Market intelligence notes for competitive research and brainstorming
+ */
+export const intelligence = mysqlTable("intelligence", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  title: varchar("title", { length: 255 }),
+  content: text("content").notNull(),
+  source: varchar("source", { length: 100 }), // TechCrunch, Twitter, Competitor Blog, Internal
+  url: varchar("url", { length: 500 }),
+  tags: text("tags"), // JSON array of tags
+  convertedToPostId: int("convertedToPostId"), // Reference to post if converted
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Intelligence = typeof intelligence.$inferSelect;
+export type InsertIntelligence = typeof intelligence.$inferInsert;

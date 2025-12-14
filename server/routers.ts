@@ -301,6 +301,63 @@ export const appRouter = router({
         return await db.getGoalsForPost(input.postId);
       }),
   }),
+
+  // Market Intelligence
+  intelligence: router({
+    list: protectedProcedure
+      .input(z.object({ source: z.string().optional() }).optional())
+      .query(async ({ ctx, input }) => {
+        if (input?.source) {
+          return await db.getIntelligenceBySource(input.source, ctx.user.id);
+        }
+        return await db.getAllIntelligence(ctx.user.id);
+      }),
+    
+    getById: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getIntelligenceById(input.id);
+      }),
+    
+    create: protectedProcedure
+      .input(z.object({
+        title: z.string().max(255).optional(),
+        content: z.string().min(1),
+        source: z.string().max(100).optional(),
+        url: z.string().max(500).optional(),
+        tags: z.string().optional(), // JSON string
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createIntelligence({
+          ...input,
+          userId: ctx.user.id,
+        });
+        return { id };
+      }),
+    
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        title: z.string().max(255).optional(),
+        content: z.string().optional(),
+        source: z.string().max(100).optional(),
+        url: z.string().max(500).optional(),
+        tags: z.string().optional(),
+        convertedToPostId: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...updates } = input;
+        await db.updateIntelligence(id, updates);
+        return { success: true };
+      }),
+    
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteIntelligence(input.id);
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

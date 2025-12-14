@@ -58,3 +58,12 @@
 ## Navigation Updates
 - [x] Add "Review Drafts" link to sidebar navigation
 - [x] Change "Community Reports" to "Analytics Reports" in Dashboard quick links
+
+## Market Intel Feature
+- [x] Design database schema for intelligence notes
+- [x] Create backend API for intel CRUD operations
+- [x] Build Market Intel page UI with note capture form
+- [x] Implement intelligence cards with source tags
+- [x] Add "Convert to Post" functionality
+- [x] Create source filtering system
+- [x] Add Market Intel to navigation

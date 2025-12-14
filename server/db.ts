@@ -1,6 +1,6 @@
 import { eq, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, platforms, posts, assets, postAssets, goals, postGoals, InsertPost, InsertAsset, InsertPlatform, InsertGoal } from "../drizzle/schema";
+import { InsertUser, users, platforms, posts, assets, postAssets, goals, postGoals, intelligence, InsertPost, InsertAsset, InsertPlatform, InsertGoal, InsertIntelligence } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -329,8 +329,68 @@ export async function linkPostToGoal(postId: number, goalId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(postGoals).values({ postId, goalId });
-  return result;
+  await db.insert(postGoals).values({ postId, goalId });
+}
+
+// ===== INTELLIGENCE OPERATIONS =====
+
+export async function getAllIntelligence(userId?: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  if (userId) {
+    return await db.select().from(intelligence)
+      .where(eq(intelligence.userId, userId))
+      .orderBy(desc(intelligence.createdAt));
+  }
+  
+  return await db.select().from(intelligence)
+    .orderBy(desc(intelligence.createdAt));
+}
+
+export async function getIntelligenceById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(intelligence).where(eq(intelligence.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getIntelligenceBySource(source: string, userId?: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  if (userId) {
+    return await db.select().from(intelligence)
+      .where(and(eq(intelligence.source, source), eq(intelligence.userId, userId)))
+      .orderBy(desc(intelligence.createdAt));
+  }
+  
+  return await db.select().from(intelligence)
+    .where(eq(intelligence.source, source))
+    .orderBy(desc(intelligence.createdAt));
+}
+
+export async function createIntelligence(intel: InsertIntelligence) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(intelligence).values(intel);
+  return result[0].insertId;
+}
+
+export async function updateIntelligence(id: number, updates: Partial<InsertIntelligence>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(intelligence).set(updates).where(eq(intelligence.id, id));
+}
+
+export async function deleteIntelligence(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(intelligence).where(eq(intelligence.id, id));
 }
 
 export async function getGoalsForPost(postId: number) {
