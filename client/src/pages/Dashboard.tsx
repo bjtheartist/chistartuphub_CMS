@@ -39,9 +39,9 @@ export default function Dashboard() {
               Welcome back, Admin. System status: <span className="text-green-600 font-bold">OPERATIONAL</span>
             </p>
           </div>
-          <button className="neo-btn">
+          <a href="/posts/new" className="neo-btn">
             + New Post
-          </button>
+          </a>
         </div>
 
         {/* Stats Grid */}
@@ -124,7 +124,7 @@ export default function Dashboard() {
               <div className="neo-card p-8 text-center text-gray-500">
                 <CalendarIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p className="font-mono">No upcoming posts scheduled</p>
-                <button className="neo-btn mt-4">Create First Post</button>
+                <a href="/posts/new" className="neo-btn mt-4">Create First Post</a>
               </div>
             )}
           </div>

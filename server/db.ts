@@ -1,6 +1,6 @@
 import { eq, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, platforms, posts, assets, postAssets, InsertPost, InsertAsset, InsertPlatform } from "../drizzle/schema";
+import { InsertUser, users, platforms, posts, assets, postAssets, goals, postGoals, InsertPost, InsertAsset, InsertPlatform, InsertGoal } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -257,4 +257,93 @@ export async function getAssetsForPost(postId: number) {
     .where(eq(postAssets.postId, postId));
   
   return result.map(r => r.asset);
+}
+
+// ===== GOAL OPERATIONS =====
+
+export async function getAllGoals(userId?: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  if (userId) {
+    return await db.select().from(goals).where(eq(goals.userId, userId)).orderBy(desc(goals.createdAt));
+  }
+  
+  return await db.select().from(goals).orderBy(desc(goals.createdAt));
+}
+
+export async function getGoalById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(goals).where(eq(goals.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getGoalsByStatus(status: "active" | "completed" | "paused" | "cancelled", userId?: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  if (userId) {
+    return await db.select().from(goals)
+      .where(and(eq(goals.status, status), eq(goals.userId, userId)))
+      .orderBy(desc(goals.createdAt));
+  }
+  
+  return await db.select().from(goals)
+    .where(eq(goals.status, status))
+    .orderBy(desc(goals.createdAt));
+}
+
+export async function createGoal(goal: InsertGoal) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(goals).values(goal);
+  return result;
+}
+
+export async function updateGoal(id: number, goal: Partial<InsertGoal>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.update(goals).set(goal).where(eq(goals.id, id));
+  return result;
+}
+
+export async function deleteGoal(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Delete associated post-goal relationships first
+  await db.delete(postGoals).where(eq(postGoals.goalId, id));
+  
+  // Delete the goal
+  const result = await db.delete(goals).where(eq(goals.id, id));
+  return result;
+}
+
+// ===== POST-GOAL RELATIONSHIP OPERATIONS =====
+
+export async function linkPostToGoal(postId: number, goalId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(postGoals).values({ postId, goalId });
+  return result;
+}
+
+export async function getGoalsForPost(postId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db
+    .select({
+      goal: goals,
+    })
+    .from(postGoals)
+    .innerJoin(goals, eq(postGoals.goalId, goals.id))
+    .where(eq(postGoals.postId, postId));
+  
+  return result.map(r => r.goal);
 }

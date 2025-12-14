@@ -4,7 +4,8 @@ import { getLoginUrl } from "@/const";
 import { 
   LayoutDashboard, 
   Calendar, 
-  Image as ImageIcon, 
+  Image as ImageIcon,
+  Target, 
   Settings, 
   LogOut, 
   Menu,
@@ -42,6 +43,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { icon: LayoutDashboard, label: "Dashboard", href: "/" },
     { icon: Calendar, label: "Content Calendar", href: "/calendar" },
     { icon: ImageIcon, label: "Asset Library", href: "/assets" },
+    { icon: Target, label: "Goals", href: "/goals" },
     { icon: BarChart3, label: "Analytics", href: "/analytics" },
     { icon: Users, label: "Community", href: "/community" },
     { icon: Settings, label: "Settings", href: "/settings" },

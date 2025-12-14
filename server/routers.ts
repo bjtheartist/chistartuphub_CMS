@@ -203,6 +203,104 @@ export const appRouter = router({
       };
     }),
   }),
+
+  // Goals management
+  goals: router({
+    list: protectedProcedure
+      .input(z.object({ status: z.enum(["active", "completed", "paused", "cancelled"]).optional() }).optional())
+      .query(async ({ ctx, input }) => {
+        if (input?.status) {
+          return await db.getGoalsByStatus(input.status, ctx.user.id);
+        }
+        return await db.getAllGoals(ctx.user.id);
+      }),
+    
+    getById: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getGoalById(input.id);
+      }),
+    
+    create: protectedProcedure
+      .input(z.object({
+        title: z.string().min(1).max(255),
+        description: z.string().optional(),
+        specific: z.string().optional(),
+        measurable: z.string().optional(),
+        achievable: z.string().optional(),
+        relevant: z.string().optional(),
+        timeBound: z.string().optional(),
+        targetValue: z.number().optional(),
+        metricType: z.string().optional(),
+        startDate: z.date(),
+        endDate: z.date(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const result = await db.createGoal({
+          userId: ctx.user.id,
+          title: input.title,
+          description: input.description,
+          specific: input.specific,
+          measurable: input.measurable,
+          achievable: input.achievable,
+          relevant: input.relevant,
+          timeBound: input.timeBound,
+          targetValue: input.targetValue,
+          currentValue: 0,
+          metricType: input.metricType,
+          status: "active",
+          startDate: input.startDate,
+          endDate: input.endDate,
+        });
+        return { success: true, id: Number((result as any)[0]?.insertId || 0) };
+      }),
+    
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        title: z.string().min(1).max(255).optional(),
+        description: z.string().optional(),
+        specific: z.string().optional(),
+        measurable: z.string().optional(),
+        achievable: z.string().optional(),
+        relevant: z.string().optional(),
+        timeBound: z.string().optional(),
+        targetValue: z.number().optional(),
+        currentValue: z.number().optional(),
+        metricType: z.string().optional(),
+        status: z.enum(["active", "completed", "paused", "cancelled"]).optional(),
+        startDate: z.date().optional(),
+        endDate: z.date().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...updates } = input;
+        await db.updateGoal(id, updates);
+        return { success: true };
+      }),
+    
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteGoal(input.id);
+        return { success: true };
+      }),
+    
+    linkToPost: protectedProcedure
+      .input(z.object({
+        postId: z.number(),
+        goalId: z.number(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.linkPostToGoal(input.postId, input.goalId);
+        return { success: true };
+      }),
+    
+    getForPost: protectedProcedure
+      .input(z.object({ postId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getGoalsForPost(input.postId);
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

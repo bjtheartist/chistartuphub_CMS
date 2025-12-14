@@ -7,6 +7,8 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Dashboard from "./pages/Dashboard";
 import AssetLibrary from "./pages/AssetLibrary";
 import ContentCalendar from "./pages/ContentCalendar";
+import CreatePost from "./pages/CreatePost";
+import Goals from "./pages/Goals";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -14,6 +16,8 @@ function Router() {
       <Route path="/" component={Dashboard} />
       <Route path="/assets" component={AssetLibrary} />
       <Route path="/calendar" component={ContentCalendar} />
+      <Route path="/posts/new" component={CreatePost} />
+      <Route path="/goals" component={Goals} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

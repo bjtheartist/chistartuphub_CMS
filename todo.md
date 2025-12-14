@@ -26,3 +26,25 @@
 - [x] Add search and filter functionality
 - [ ] Implement post status workflow (draft, scheduled, published)
 - [ ] Add platform-specific post templates
+
+## Post Creation & Editing Interface
+- [x] Design database schema for post templates
+- [x] Create rich text editor component
+- [x] Build post creation form with scheduling
+- [ ] Implement post editing functionality
+- [x] Add platform-specific template system
+- [x] Create LinkedIn article template
+- [x] Create Instagram carousel template
+- [x] Create X thread template
+- [x] Add post preview functionality
+- [ ] Implement draft auto-save
+
+## SMART Goals System
+- [x] Design database schema for quarterly goals
+- [x] Create backend API for goals CRUD
+- [x] Build goals dashboard page
+- [x] Implement goal creation form (Specific, Measurable, Achievable, Relevant, Time-bound)
+- [x] Add goal progress tracking
+- [x] Create goal metrics visualization
+- [x] Link posts to goals for tracking
+- [ ] Add quarterly goal reports

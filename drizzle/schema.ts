@@ -95,3 +95,44 @@ export const postAssets = mysqlTable("postAssets", {
 
 export type PostAsset = typeof postAssets.$inferSelect;
 export type InsertPostAsset = typeof postAssets.$inferInsert;
+
+/**
+ * SMART goals for tracking quarterly objectives
+ */
+export const goals = mysqlTable("goals", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(), // Goal owner
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  // SMART criteria
+  specific: text("specific"), // What exactly do you want to achieve?
+  measurable: text("measurable"), // How will you measure success?
+  achievable: text("achievable"), // Is this realistic?
+  relevant: text("relevant"), // Why is this important?
+  timeBound: text("timeBound"), // When will you achieve this?
+  // Tracking
+  targetValue: int("targetValue"), // Target metric value
+  currentValue: int("currentValue").default(0), // Current progress
+  metricType: varchar("metricType", { length: 50 }), // followers, posts, engagement, etc.
+  status: mysqlEnum("status", ["active", "completed", "paused", "cancelled"]).default("active").notNull(),
+  startDate: timestamp("startDate").notNull(),
+  endDate: timestamp("endDate").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Goal = typeof goals.$inferSelect;
+export type InsertGoal = typeof goals.$inferInsert;
+
+/**
+ * Link posts to goals for tracking contribution
+ */
+export const postGoals = mysqlTable("postGoals", {
+  id: int("id").autoincrement().primaryKey(),
+  postId: int("postId").notNull(),
+  goalId: int("goalId").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type PostGoal = typeof postGoals.$inferSelect;
+export type InsertPostGoal = typeof postGoals.$inferInsert;
