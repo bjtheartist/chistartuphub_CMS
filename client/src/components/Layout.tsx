@@ -11,7 +11,8 @@ import {
   Menu,
   X,
   BarChart3,
-  Users
+  Users,
+  FileText
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/" },
     { icon: Calendar, label: "Content Calendar", href: "/calendar" },
+    { icon: FileText, label: "Review Drafts", href: "/drafts" },
     { icon: ImageIcon, label: "Asset Library", href: "/assets" },
     { icon: Target, label: "Goals", href: "/goals" },
     { icon: BarChart3, label: "Analytics", href: "/analytics" },

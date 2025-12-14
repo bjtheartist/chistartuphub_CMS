@@ -160,7 +160,7 @@ export default function Dashboard() {
                   Review Drafts <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100" />
                 </a>
                 <a href="/analytics" className="w-full text-left px-3 py-2 hover:bg-gray-100 font-mono text-sm border border-transparent hover:border-black transition-all flex justify-between items-center group block">
-                  Community Reports <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100" />
+                  Analytics Reports <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100" />
                 </a>
               </div>
             </div>

@@ -54,3 +54,7 @@
 - [x] Create Review Drafts page to view all draft posts
 - [x] Build Analytics dashboard page with metrics
 - [x] Remove Community from sidebar navigation
+
+## Navigation Updates
+- [x] Add "Review Drafts" link to sidebar navigation
+- [x] Change "Community Reports" to "Analytics Reports" in Dashboard quick links
