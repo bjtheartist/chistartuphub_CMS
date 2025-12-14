@@ -1,4 +1,6 @@
 import { Link, useLocation } from "wouter";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { getLoginUrl } from "@/const";
 import { 
   LayoutDashboard, 
   Calendar, 
@@ -17,6 +19,24 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { user, loading, logout } = useAuth();
+
+  // Redirect to login if not authenticated
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-black border-t-brand-blue animate-spin mx-auto mb-4"></div>
+          <p className="font-mono font-bold">LOADING SYSTEM...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    window.location.href = getLoginUrl();
+    return null;
+  }
 
   const navItems = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/" },
@@ -63,10 +83,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </nav>
 
       <div className="p-4 border-t-2 border-gray-800">
-        <div className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white cursor-pointer transition-colors">
+        <div className="px-4 py-2 border-b border-gray-800 mb-2">
+          <p className="font-mono text-xs text-gray-500">LOGGED IN AS</p>
+          <p className="font-mono text-sm font-bold text-white truncate">{user?.name || user?.email || "User"}</p>
+        </div>
+        <button 
+          onClick={() => logout()}
+          className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white cursor-pointer transition-colors w-full"
+        >
           <LogOut size={20} />
           <span className="font-mono font-bold uppercase text-sm">Logout</span>
-        </div>
+        </button>
       </div>
     </div>
   );

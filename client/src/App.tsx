@@ -7,8 +7,8 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Dashboard from "./pages/Dashboard";
 import AssetLibrary from "./pages/AssetLibrary";
 import ContentCalendar from "./pages/ContentCalendar";
-
 function Router() {
+  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
