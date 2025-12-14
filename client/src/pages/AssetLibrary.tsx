@@ -150,6 +150,17 @@ export default function AssetLibrary() {
           </div>
           <div className="flex gap-2">
             <button 
+              onClick={() => window.open("https://gemini.google.com", "_blank")}
+              className="neo-btn-outline flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor"/>
+                <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Generate with AI
+            </button>
+            <button 
               onClick={() => setUploadDialogOpen(true)}
               className="neo-btn flex items-center gap-2"
             >

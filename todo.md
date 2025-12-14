@@ -48,3 +48,9 @@
 - [x] Create goal metrics visualization
 - [x] Link posts to goals for tracking
 - [ ] Add quarterly goal reports
+
+## CMS Updates - December 2024
+- [x] Add "Generate with AI" link to Asset Library (links to Gemini)
+- [x] Create Review Drafts page to view all draft posts
+- [x] Build Analytics dashboard page with metrics
+- [x] Remove Community from sidebar navigation

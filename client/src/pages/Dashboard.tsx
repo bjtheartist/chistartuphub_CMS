@@ -156,7 +156,7 @@ export default function Dashboard() {
                 <a href="/assets" className="w-full text-left px-3 py-2 hover:bg-gray-100 font-mono text-sm border border-transparent hover:border-black transition-all flex justify-between items-center group block">
                   Generate Asset <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100" />
                 </a>
-                <a href="/calendar" className="w-full text-left px-3 py-2 hover:bg-gray-100 font-mono text-sm border border-transparent hover:border-black transition-all flex justify-between items-center group block">
+                <a href="/drafts" className="w-full text-left px-3 py-2 hover:bg-gray-100 font-mono text-sm border border-transparent hover:border-black transition-all flex justify-between items-center group block">
                   Review Drafts <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100" />
                 </a>
                 <a href="/analytics" className="w-full text-left px-3 py-2 hover:bg-gray-100 font-mono text-sm border border-transparent hover:border-black transition-all flex justify-between items-center group block">
