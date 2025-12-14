@@ -67,3 +67,7 @@
 - [x] Add "Convert to Post" functionality
 - [x] Create source filtering system
 - [x] Add Market Intel to navigation
+
+## Bug Fixes & Data Reset
+- [x] Add Layout wrapper to Drafts page
+- [x] Clear all test data from database (posts, goals, intelligence)

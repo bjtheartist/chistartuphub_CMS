@@ -1,0 +1,9 @@
+{
+  "query": "DELETE FROM postGoals; DELETE FROM postAssets; DELETE FROM intelligence; DELETE FROM goals; DELETE FROM posts; DELETE FROM assets;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2FkAsdWUpvkYXBr.ea1169715ad7 --database 7U8gZ2Mk2nbkJLC3RCdxZS --execute DELETE FROM postGoals; DELETE FROM postAssets; DELETE FROM intelligence; DELETE FROM goals; DELETE FROM posts; DELETE FROM assets;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 229
+}
