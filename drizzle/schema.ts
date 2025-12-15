@@ -48,6 +48,7 @@ export const posts = mysqlTable("posts", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull(), // Author
   platformId: int("platformId").notNull(), // Target platform
+  brandId: int("brandId"), // Which brand this post is for
   title: varchar("title", { length: 255 }).notNull(),
   content: text("content").notNull(),
   status: mysqlEnum("status", ["draft", "scheduled", "published", "archived"]).default("draft").notNull(),
@@ -193,3 +194,26 @@ export const userSettings = mysqlTable("userSettings", {
 
 export type UserSettings = typeof userSettings.$inferSelect;
 export type InsertUserSettings = typeof userSettings.$inferInsert;
+
+/**
+ * Brands/businesses managed in the CMS
+ */
+export const brands = mysqlTable("brands", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(),
+  slug: varchar("slug", { length: 50 }).notNull().unique(),
+  website: varchar("website", { length: 255 }),
+  description: text("description"),
+  industry: varchar("industry", { length: 100 }),
+  logoUrl: varchar("logoUrl", { length: 500 }),
+  primaryColor: varchar("primaryColor", { length: 20 }),
+  secondaryColor: varchar("secondaryColor", { length: 20 }),
+  accentColor: varchar("accentColor", { length: 20 }),
+  tagline: varchar("tagline", { length: 255 }),
+  isActive: int("isActive").default(1).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Brand = typeof brands.$inferSelect;
+export type InsertBrand = typeof brands.$inferInsert;

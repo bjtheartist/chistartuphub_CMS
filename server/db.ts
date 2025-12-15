@@ -1,6 +1,6 @@
 import { eq, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, platforms, posts, assets, postAssets, goals, postGoals, intelligence, userSettings, InsertPost, InsertAsset, InsertPlatform, InsertGoal, InsertIntelligence, InsertUserSettings } from "../drizzle/schema";
+import { InsertUser, users, platforms, posts, assets, postAssets, goals, postGoals, intelligence, userSettings, brands, InsertPost, InsertAsset, InsertPlatform, InsertGoal, InsertIntelligence, InsertUserSettings, InsertBrand } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -446,4 +446,52 @@ export async function getGoalsForPost(postId: number) {
     .where(eq(postGoals.postId, postId));
   
   return result.map(r => r.goal);
+}
+
+// ===== BRAND OPERATIONS =====
+
+export async function getAllBrands() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(brands).where(eq(brands.isActive, 1)).orderBy(brands.name);
+}
+
+export async function getBrandById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(brands).where(eq(brands.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getBrandBySlug(slug: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(brands).where(eq(brands.slug, slug)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createBrand(brand: InsertBrand) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(brands).values(brand);
+  return result[0].insertId;
+}
+
+export async function updateBrand(id: number, updates: Partial<InsertBrand>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(brands).set(updates).where(eq(brands.id, id));
+}
+
+export async function deleteBrand(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Soft delete by setting isActive to 0
+  await db.update(brands).set({ isActive: 0 }).where(eq(brands.id, id));
 }

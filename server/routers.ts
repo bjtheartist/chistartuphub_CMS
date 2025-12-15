@@ -53,6 +53,7 @@ export const appRouter = router({
     create: protectedProcedure
       .input(z.object({
         platformId: z.number(),
+        brandId: z.number().optional(),
         title: z.string().min(1).max(255),
         content: z.string().min(1),
         postType: z.string().optional(),
@@ -63,6 +64,7 @@ export const appRouter = router({
         const result = await db.createPost({
           userId: ctx.user.id,
           platformId: input.platformId,
+          brandId: input.brandId,
           title: input.title,
           content: input.content,
           postType: input.postType,
@@ -75,6 +77,7 @@ export const appRouter = router({
     update: protectedProcedure
       .input(z.object({
         id: z.number(),
+        brandId: z.number().optional(),
         title: z.string().min(1).max(255).optional(),
         content: z.string().min(1).optional(),
         postType: z.string().optional(),
@@ -391,6 +394,69 @@ export const appRouter = router({
       }))
       .mutation(async ({ ctx, input }) => {
         await db.updateUserSettings(ctx.user.id, input);
+        return { success: true };
+      }),
+  }),
+
+  // Brand management
+  brands: router({
+    list: publicProcedure.query(async () => {
+      return await db.getAllBrands();
+    }),
+    
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getBrandById(input.id);
+      }),
+    
+    getBySlug: publicProcedure
+      .input(z.object({ slug: z.string() }))
+      .query(async ({ input }) => {
+        return await db.getBrandBySlug(input.slug);
+      }),
+    
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string().min(1).max(100),
+        slug: z.string().min(1).max(50),
+        website: z.string().max(255).optional(),
+        description: z.string().optional(),
+        industry: z.string().max(100).optional(),
+        logoUrl: z.string().max(500).optional(),
+        primaryColor: z.string().max(20).optional(),
+        secondaryColor: z.string().max(20).optional(),
+        accentColor: z.string().max(20).optional(),
+        tagline: z.string().max(255).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.createBrand(input);
+        return { id };
+      }),
+    
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().max(100).optional(),
+        website: z.string().max(255).optional(),
+        description: z.string().optional(),
+        industry: z.string().max(100).optional(),
+        logoUrl: z.string().max(500).optional(),
+        primaryColor: z.string().max(20).optional(),
+        secondaryColor: z.string().max(20).optional(),
+        accentColor: z.string().max(20).optional(),
+        tagline: z.string().max(255).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...updates } = input;
+        await db.updateBrand(id, updates);
+        return { success: true };
+      }),
+    
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteBrand(input.id);
         return { success: true };
       }),
   }),

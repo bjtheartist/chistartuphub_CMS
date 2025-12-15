@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
+import { trpc } from "@/lib/trpc";
 import { 
   LayoutDashboard, 
   Calendar, 
@@ -9,20 +10,57 @@ import {
   Settings, 
   LogOut, 
   Menu,
-  X,
+  ChevronDown,
   BarChart3,
-  Users,
   FileText,
-  Lightbulb
+  Lightbulb,
+  Building2
 } from "lucide-react";
-import { useState } from "react";
+import { useState, createContext, useContext } from "react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+
+// Brand context for global brand selection
+interface BrandContextType {
+  selectedBrandId: number | null;
+  setSelectedBrandId: (id: number | null) => void;
+  selectedBrand: { id: number; name: string; slug: string; primaryColor: string | null } | null;
+}
+
+export const BrandContext = createContext<BrandContextType>({
+  selectedBrandId: null,
+  setSelectedBrandId: () => {},
+  selectedBrand: null,
+});
+
+export const useBrand = () => useContext(BrandContext);
+
+export function BrandProvider({ children }: { children: React.ReactNode }) {
+  const [selectedBrandId, setSelectedBrandId] = useState<number | null>(null);
+  const { data: brands } = trpc.brands.list.useQuery();
+  
+  const selectedBrand = brands?.find((b: { id: number; name: string; slug: string; primaryColor: string | null }) => b.id === selectedBrandId) || null;
+
+  return (
+    <BrandContext.Provider value={{ selectedBrandId, setSelectedBrandId, selectedBrand }}>
+      {children}
+    </BrandContext.Provider>
+  );
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { user, loading, logout } = useAuth();
+  const { selectedBrandId, setSelectedBrandId, selectedBrand } = useBrand();
+  const { data: brands } = trpc.brands.list.useQuery();
 
   // Redirect to login if not authenticated
   if (loading) {
@@ -66,7 +104,61 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      <nav className="flex-1 p-4 space-y-2">
+      {/* Brand Switcher */}
+      <div className="p-4 border-b-2 border-gray-800">
+        <p className="font-mono text-xs text-gray-500 mb-2">ACTIVE BRAND</p>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="w-full flex items-center justify-between gap-2 px-3 py-2 bg-gray-900 border-2 border-gray-700 hover:border-brand-blue transition-colors">
+              <div className="flex items-center gap-2">
+                <div 
+                  className="w-6 h-6 border border-white flex items-center justify-center"
+                  style={{ backgroundColor: selectedBrand?.primaryColor || '#2563EB' }}
+                >
+                  <Building2 size={14} />
+                </div>
+                <span className="font-mono text-sm font-bold truncate">
+                  {selectedBrand?.name || "All Brands"}
+                </span>
+              </div>
+              <ChevronDown size={16} className="text-gray-500" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56 bg-black border-2 border-white">
+            <DropdownMenuItem 
+              onClick={() => setSelectedBrandId(null)}
+              className="font-mono text-sm cursor-pointer hover:bg-brand-blue"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 bg-gray-700 border border-white flex items-center justify-center">
+                  <Building2 size={12} />
+                </div>
+                <span>All Brands</span>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-gray-700" />
+            {brands?.map((brand: { id: number; name: string; slug: string; primaryColor: string | null }) => (
+              <DropdownMenuItem 
+                key={brand.id}
+                onClick={() => setSelectedBrandId(brand.id)}
+                className={`font-mono text-sm cursor-pointer hover:bg-brand-blue ${selectedBrandId === brand.id ? 'bg-gray-800' : ''}`}
+              >
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-5 h-5 border border-white flex items-center justify-center"
+                    style={{ backgroundColor: brand.primaryColor || '#2563EB' }}
+                  >
+                    <span className="text-[10px] font-bold">{brand.name.charAt(0)}</span>
+                  </div>
+                  <span className="truncate">{brand.name}</span>
+                </div>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = location === item.href;
           return (

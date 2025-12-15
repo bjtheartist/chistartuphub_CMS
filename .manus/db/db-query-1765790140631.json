@@ -1,0 +1,13 @@
+{
+  "query": "SELECT slug FROM brands WHERE name = 'BJN Fitness';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2FkAsdWUpvkYXBr.ea1169715ad7 --database 7U8gZ2Mk2nbkJLC3RCdxZS --execute SELECT slug FROM brands WHERE name = 'BJN Fitness';",
+  "rows": [
+    {
+      "slug": "bjn-fitness"
+    }
+  ],
+  "messages": [],
+  "stdout": "slug\nbjn-fitness\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

@@ -1,4 +1,4 @@
-import Layout from "@/components/Layout";
+import Layout, { useBrand } from "@/components/Layout";
 import { trpc } from "@/lib/trpc";
 import { useState } from "react";
 import { useLocation } from "wouter";
@@ -19,6 +19,7 @@ interface PostFormData {
   title: string;
   content: string;
   platformId: number | null;
+  brandId: number | null;
   postType: string;
   status: "draft" | "scheduled" | "published";
   scheduledFor?: Date;
@@ -27,16 +28,19 @@ interface PostFormData {
 
 export default function CreatePost() {
   const [, navigate] = useLocation();
+  const { selectedBrandId } = useBrand();
   const [formData, setFormData] = useState<PostFormData>({
     title: "",
     content: "",
     platformId: null,
+    brandId: selectedBrandId,
     postType: "text",
     status: "draft",
   });
   const [showScheduler, setShowScheduler] = useState(false);
 
   const { data: platforms } = trpc.platforms.list.useQuery();
+  const { data: brands } = trpc.brands.list.useQuery();
   const { data: goals } = trpc.goals.list.useQuery({ status: "active" });
   const { data: assets } = trpc.assets.list.useQuery();
 
@@ -72,6 +76,7 @@ export default function CreatePost() {
       title: formData.title,
       content: formData.content,
       platformId: formData.platformId,
+      brandId: formData.brandId || undefined,
       postType: formData.postType,
       status,
       scheduledFor: status === "scheduled" ? formData.scheduledFor : undefined,
@@ -285,6 +290,26 @@ export default function CreatePost() {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Brand Selection */}
+            <Card className="neo-card p-4">
+              <h3 className="font-mono font-bold uppercase text-sm mb-4">Brand</h3>
+              <Select
+                value={formData.brandId?.toString() || ""}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, brandId: value ? parseInt(value) : null }))}
+              >
+                <SelectTrigger className="border-2 border-black font-mono">
+                  <SelectValue placeholder="Select brand" />
+                </SelectTrigger>
+                <SelectContent>
+                  {brands?.map((brand: { id: number; name: string }) => (
+                    <SelectItem key={brand.id} value={brand.id.toString()}>
+                      {brand.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Card>
+
             {/* Platform Selection */}
             <Card className="neo-card p-4">
               <h3 className="font-mono font-bold uppercase text-sm mb-4">Platform</h3>

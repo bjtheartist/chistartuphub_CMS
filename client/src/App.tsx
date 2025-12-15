@@ -13,6 +13,7 @@ import Drafts from "./pages/Drafts";
 import Analytics from "./pages/Analytics";
 import MarketIntel from "./pages/MarketIntel";
 import Settings from "./pages/Settings";
+import { BrandProvider } from "./components/Layout";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -37,10 +38,12 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <BrandProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </BrandProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

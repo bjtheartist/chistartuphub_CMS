@@ -82,3 +82,12 @@
 - [x] Implement Notification Settings section (email alerts, reminders)
 - [x] Implement Brand Settings section (logo, colors, hashtags, signature)
 - [x] Add settings persistence and validation
+
+
+## Multi-Brand Management
+- [x] Create brands table in database schema
+- [x] Seed all five brands (ChiStartup Hub, Just AFC, Everett Home Staffing, Kivara Studios, BJN Fitness)
+- [x] Add brand selection to post creation form
+- [ ] Add brand filter to Dashboard, Calendar, and Drafts pages
+- [x] Update sidebar with brand switcher
+- [ ] Display brand-specific content in all views

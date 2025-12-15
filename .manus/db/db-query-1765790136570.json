@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, name, slug FROM brands WHERE name LIKE '%BJN%' OR slug LIKE '%bjn%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2FkAsdWUpvkYXBr.ea1169715ad7 --database 7U8gZ2Mk2nbkJLC3RCdxZS --execute SELECT id, name, slug FROM brands WHERE name LIKE '%BJN%' OR slug LIKE '%bjn%';",
+  "rows": [
+    {
+      "id": "5",
+      "name": "BJN Fitness",
+      "slug": "bjn-fitness"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tslug\n5\tBJN Fitness\tbjn-fitness\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}
