@@ -1,6 +1,6 @@
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, or, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, platforms, posts, assets, postAssets, goals, postGoals, intelligence, userSettings, brands, InsertPost, InsertAsset, InsertPlatform, InsertGoal, InsertIntelligence, InsertUserSettings, InsertBrand } from "../drizzle/schema";
+import { InsertUser, users, platforms, posts, assets, postAssets, goals, postGoals, intelligence, userSettings, brands, templates, InsertPost, InsertAsset, InsertPlatform, InsertGoal, InsertIntelligence, InsertUserSettings, InsertBrand, InsertTemplate } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -494,4 +494,89 @@ export async function deleteBrand(id: number) {
   
   // Soft delete by setting isActive to 0
   await db.update(brands).set({ isActive: 0 }).where(eq(brands.id, id));
+}
+
+// ===== TEMPLATE OPERATIONS =====
+
+export async function getAllTemplates(userId?: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Get system templates (userId is null) and user's own templates
+  if (userId) {
+    return await db.select().from(templates)
+      .where(or(isNull(templates.userId), eq(templates.userId, userId)))
+      .orderBy(desc(templates.createdAt));
+  }
+  
+  // Only system templates if no user
+  return await db.select().from(templates)
+    .where(isNull(templates.userId))
+    .orderBy(desc(templates.createdAt));
+}
+
+export async function getTemplateById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(templates).where(eq(templates.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getTemplatesByPlatform(platformId: number, userId?: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  if (userId) {
+    return await db.select().from(templates)
+      .where(and(
+        eq(templates.platformId, platformId),
+        or(isNull(templates.userId), eq(templates.userId, userId))
+      ))
+      .orderBy(desc(templates.createdAt));
+  }
+  
+  return await db.select().from(templates)
+    .where(and(eq(templates.platformId, platformId), isNull(templates.userId)))
+    .orderBy(desc(templates.createdAt));
+}
+
+export async function getTemplatesByCategory(category: string, userId?: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  if (userId) {
+    return await db.select().from(templates)
+      .where(and(
+        eq(templates.category, category),
+        or(isNull(templates.userId), eq(templates.userId, userId))
+      ))
+      .orderBy(desc(templates.createdAt));
+  }
+  
+  return await db.select().from(templates)
+    .where(and(eq(templates.category, category), isNull(templates.userId)))
+    .orderBy(desc(templates.createdAt));
+}
+
+export async function createTemplate(template: InsertTemplate) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(templates).values(template);
+  return result[0].insertId;
+}
+
+export async function updateTemplate(id: number, updates: Partial<InsertTemplate>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(templates).set(updates).where(eq(templates.id, id));
+}
+
+export async function deleteTemplate(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(templates).where(eq(templates.id, id));
 }

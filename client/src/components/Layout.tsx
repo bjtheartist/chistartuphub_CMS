@@ -14,7 +14,8 @@ import {
   BarChart3,
   FileText,
   Lightbulb,
-  Building2
+  Building2,
+  Palette
 } from "lucide-react";
 import { useState, createContext, useContext } from "react";
 import { Button } from "@/components/ui/button";
@@ -84,6 +85,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { icon: Calendar, label: "Content Calendar", href: "/calendar" },
     { icon: FileText, label: "Review Drafts", href: "/drafts" },
     { icon: Lightbulb, label: "Market Intel", href: "/market-intel" },
+    { icon: Palette, label: "Design Studio", href: "/design" },
     { icon: ImageIcon, label: "Asset Library", href: "/assets" },
     { icon: Target, label: "Goals", href: "/goals" },
     { icon: BarChart3, label: "Analytics", href: "/analytics" },

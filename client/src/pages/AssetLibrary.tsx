@@ -1,7 +1,8 @@
 import Layout from "@/components/Layout";
 import { trpc } from "@/lib/trpc";
-import { Search, Filter, Download, Copy, ExternalLink, Upload, Loader2, X } from "lucide-react";
+import { Search, Filter, Download, Copy, ExternalLink, Upload, Loader2, X, Palette, Edit } from "lucide-react";
 import { useState, useRef } from "react";
+import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function AssetLibrary() {
+  const [, navigate] = useLocation();
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
@@ -150,15 +152,11 @@ export default function AssetLibrary() {
           </div>
           <div className="flex gap-2">
             <button 
-              onClick={() => window.open("https://gemini.google.com", "_blank")}
+              onClick={() => navigate("/design")}
               className="neo-btn-outline flex items-center gap-2"
             >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor"/>
-                <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              Generate with AI
+              <Palette className="w-4 h-4" />
+              Design Studio
             </button>
             <button 
               onClick={() => setUploadDialogOpen(true)}
@@ -172,7 +170,7 @@ export default function AssetLibrary() {
         {/* Filters & Search */}
         <div className="bg-white border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
-            {["all", "branding", "social", "campaigns"].map((f) => (
+            {["all", "branding", "social", "campaigns", "designs"].map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
@@ -227,6 +225,15 @@ export default function AssetLibrary() {
                   
                   {/* Overlay Actions */}
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    {asset.category === "designs" && (
+                      <button
+                        onClick={() => navigate("/design/new")}
+                        className="p-2 bg-white border-2 border-black hover:bg-brand-blue hover:text-white transition-colors"
+                        title="Edit in Designer"
+                      >
+                        <Edit className="w-5 h-5" />
+                      </button>
+                    )}
                     <a 
                       href={asset.url} 
                       download 

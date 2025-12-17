@@ -12,7 +12,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import { CalendarIcon, Loader2, Save, Send, Eye, Sparkles } from "lucide-react";
+import { CalendarIcon, Loader2, Save, Send, Eye, Sparkles, Palette } from "lucide-react";
 import { format } from "date-fns";
 
 interface PostFormData {
@@ -409,6 +409,23 @@ export default function CreatePost() {
                 </Select>
               </Card>
             )}
+
+            {/* Design Studio */}
+            <Card className="neo-card p-4 bg-gradient-to-br from-brand-blue/10 to-brand-yellow/10">
+              <h3 className="font-mono font-bold uppercase text-sm mb-2 flex items-center gap-2">
+                <Palette className="w-4 h-4" /> Create Visual
+              </h3>
+              <p className="text-xs text-gray-600 mb-3">
+                Design a custom image for your post
+              </p>
+              <Button
+                variant="outline"
+                className="w-full border-2 border-black font-mono text-sm"
+                onClick={() => navigate("/design")}
+              >
+                Open Design Studio
+              </Button>
+            </Card>
 
             {/* Preview */}
             <Card className="neo-card p-4">

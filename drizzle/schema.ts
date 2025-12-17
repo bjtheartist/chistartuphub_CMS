@@ -217,3 +217,25 @@ export const brands = mysqlTable("brands", {
 
 export type Brand = typeof brands.$inferSelect;
 export type InsertBrand = typeof brands.$inferInsert;
+
+/**
+ * Design templates for social media graphics
+ */
+export const templates = mysqlTable("templates", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"), // null = pre-built system template
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  thumbnailUrl: varchar("thumbnailUrl", { length: 500 }),
+  canvasJson: text("canvasJson").notNull(), // Fabric.js JSON
+  platformId: int("platformId"), // Target platform
+  width: int("width").notNull(),
+  height: int("height").notNull(),
+  category: varchar("category", { length: 50 }), // announcement, promo, quote, etc.
+  isPublic: int("isPublic").default(0), // 0 = private, 1 = shared
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Template = typeof templates.$inferSelect;
+export type InsertTemplate = typeof templates.$inferInsert;

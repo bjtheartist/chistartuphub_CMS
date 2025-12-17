@@ -460,6 +460,129 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+
+  // Template management for design suite
+  templates: router({
+    // Platform size presets
+    presets: publicProcedure.query(() => {
+      return [
+        { id: 'instagram-post', platform: 'instagram', format: 'Post', width: 1080, height: 1080 },
+        { id: 'instagram-story', platform: 'instagram', format: 'Story', width: 1080, height: 1920 },
+        { id: 'instagram-landscape', platform: 'instagram', format: 'Landscape', width: 1080, height: 566 },
+        { id: 'linkedin-post', platform: 'linkedin', format: 'Post', width: 1200, height: 627 },
+        { id: 'linkedin-banner', platform: 'linkedin', format: 'Banner', width: 1584, height: 396 },
+        { id: 'x-post', platform: 'x', format: 'Post', width: 1600, height: 900 },
+        { id: 'x-header', platform: 'x', format: 'Header', width: 1500, height: 500 },
+        { id: 'facebook-post', platform: 'facebook', format: 'Post', width: 1200, height: 630 },
+        { id: 'facebook-cover', platform: 'facebook', format: 'Cover', width: 820, height: 312 },
+      ];
+    }),
+
+    list: publicProcedure
+      .input(z.object({ 
+        platformId: z.number().optional(),
+        category: z.string().optional(),
+      }).optional())
+      .query(async ({ ctx, input }) => {
+        const userId = ctx.user?.id;
+        if (input?.platformId) {
+          return await db.getTemplatesByPlatform(input.platformId, userId);
+        }
+        if (input?.category) {
+          return await db.getTemplatesByCategory(input.category, userId);
+        }
+        return await db.getAllTemplates(userId);
+      }),
+    
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getTemplateById(input.id);
+      }),
+    
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string().min(1).max(255),
+        description: z.string().optional(),
+        thumbnailUrl: z.string().max(500).optional(),
+        canvasJson: z.string(),
+        platformId: z.number().optional(),
+        width: z.number(),
+        height: z.number(),
+        category: z.string().max(50).optional(),
+        isPublic: z.number().default(0),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createTemplate({
+          ...input,
+          userId: ctx.user.id,
+        });
+        return { id };
+      }),
+    
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().max(255).optional(),
+        description: z.string().optional(),
+        thumbnailUrl: z.string().max(500).optional(),
+        canvasJson: z.string().optional(),
+        platformId: z.number().optional(),
+        width: z.number().optional(),
+        height: z.number().optional(),
+        category: z.string().max(50).optional(),
+        isPublic: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...updates } = input;
+        await db.updateTemplate(id, updates);
+        return { success: true };
+      }),
+    
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteTemplate(input.id);
+        return { success: true };
+      }),
+    
+    // Save canvas as PNG and upload to assets
+    exportToAsset: protectedProcedure
+      .input(z.object({
+        name: z.string().min(1).max(255),
+        imageData: z.string(), // Base64 PNG data
+        width: z.number(),
+        height: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Remove data URL prefix if present
+        const base64Data = input.imageData.replace(/^data:image\/png;base64,/, '');
+        const buffer = Buffer.from(base64Data, 'base64');
+        const fileSize = buffer.length;
+        
+        // Generate unique file key
+        const fileKey = `cms-assets/${ctx.user.id}/designs/${nanoid()}.png`;
+        
+        // Upload to S3
+        const { url } = await storagePut(fileKey, buffer, 'image/png');
+        
+        // Save to database as asset
+        const result = await db.createAsset({
+          userId: ctx.user.id,
+          name: input.name,
+          fileKey,
+          url,
+          mimeType: 'image/png',
+          fileSize,
+          width: input.width,
+          height: input.height,
+          category: 'designs',
+          assetType: 'image',
+        });
+        
+        return { success: true, id: Number((result as any)[0]?.insertId || 0), url };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

@@ -13,6 +13,8 @@ import Drafts from "./pages/Drafts";
 import Analytics from "./pages/Analytics";
 import MarketIntel from "./pages/MarketIntel";
 import Settings from "./pages/Settings";
+import Design from "./pages/Design";
+import DesignEditor from "./pages/DesignEditor";
 import { BrandProvider } from "./components/Layout";
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -27,6 +29,9 @@ function Router() {
       <Route path="/analytics" component={Analytics} />
       <Route path="/market-intel" component={MarketIntel} />
       <Route path="/settings" component={Settings} />
+      <Route path="/design" component={Design} />
+      <Route path="/design/new" component={DesignEditor} />
+      <Route path="/design/:id" component={DesignEditor} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
